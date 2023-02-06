@@ -40,24 +40,16 @@ class AdvertisementSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
 
     def validate(self, data):
-        open_status = 0
 
-        print(self.context["request"].user)
-
-        for i in Advertisement.objects.filter(creator=self.context["request"].user):
-            if i.status == "OPEN":
-                open_status += 1
-        print(open_status)
-
+        open_status = (len(Advertisement.objects.filter(creator=self.context["request"].user, status='OPEN')))
         if "status" not in data:
-            if open_status == 3:
-                raise ValidationError("у пользователя не может быть больше 3 открытых объявлений")
+            if open_status == 10:
+                raise ValidationError("у пользователя не может быть больше 10 открытых объявлений")
 
         if "status" in data:
-            if data["status"] == "OPEN" and open_status == 3:
-                raise ValidationError("у пользователя не может быть больше 3 открытых объявлений")
+            if data["status"] == "OPEN" and open_status == 10:
+                raise ValidationError("у пользователя не может быть больше 10 открытых объявлений")
 
         """Метод   для валидации. Вызывается при создании и обновлении."""
         # TODO: добавьте требуемую валидацию
-        print(len(data))
         return data
